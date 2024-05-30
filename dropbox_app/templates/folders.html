@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section>
+    <nav>
+        <a href="{% url 'renderHome' %}">Home</a>
+    </nav>
+    <div>
+        {% if folders %}
+        <ul class="folders">
+            {% for folder in folders %}
+            <li class="folder">
+                <img src="{{ folder.icon }}" alt="" srcset="" class="folder-img">
+                <a href="{% url 'renderFolder' folder.id %}">
+                    <span>{{ folder.folder_name }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div>
+            <p>You have no data inside this folder.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+<section>
+    {% include 'partials/createFolder.html' %}
+</section>
+<section>
+    {% include 'partials/uploadFile.html' %}
+</section>
+
+
+<section></section>
+
+
+{% endblock %}

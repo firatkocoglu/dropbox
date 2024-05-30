@@ -1,0 +1,17 @@
+.folders {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 20px;
+}
+
+.folder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.folder-img {
+  width: 20px;
+  height: 20px;
+}

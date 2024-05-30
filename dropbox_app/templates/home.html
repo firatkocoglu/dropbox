@@ -1,13 +1,40 @@
 {% extends 'base.html' %}
 {% block content %}
 <section>
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="Logout" />
-    </form>
+    <div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Logout" />
+        </form>
+    </div>
     <div>
         <h1>Welcome to Dropbox</h1>
     </div>
+    {% include 'partials/createFolder.html' %}
 </section>
+<section>
+    <section>
+        <div>
+            <h1>Folders</h1>
+            {% if folders %}
+            <ul class="folders">
+                {% for folder in folders %}
+                <li class="folder">
+                    <img src="{{ folder.icon }}" alt="" srcset="" class="folder-img">
+                    <a href="{% url 'renderFolder' folder.id %}">
+                        <span>{{ folder.folder_name }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div>
+                <p>You have no folders yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</section>
+
 
 {% endblock%}

@@ -1,0 +1,8 @@
+<div>
+    <h3>Create New Folder</h3>
+    <form action="{% url 'createFolder' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="title" id="folder-name" required />
+        <input type="submit" value="Add Folder" />
+    </form>
+</div>
