@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm, LoginForm, FileUploadForm
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from .models import File, Folder
-from django.core.serializers import serialize
-
-
+from django.http import HttpResponse, FileResponse
+from django.conf import settings
+import os
+from django.core.files.storage import FileSystemStorage
 
 def register(request):
     if request.method == "POST":
@@ -49,10 +51,10 @@ def renderHome(request):
     context = {}
 
     # RENDER TOP LEVEL FOLDERS
-    folders = Folder.objects.filter(linked_folder=None)
+    folders = Folder.objects.filter(user=request.user, linked_folder=None)
     context["folders"] = folders
-    
-    #RESET SESSION DATA
+
+    # RESET SESSION DATA
     request.session["current"] = None
 
     return render(request, "home.html", context)
@@ -66,10 +68,13 @@ def uploadFile(request):
             form_data = form.cleaned_data
             file_name = form_data["title"]
             data = form_data["file"]
+            extension = data.content_type
             file_size = data.size
             user = request.user
+            folder_id = request.session.get("current")
+            current_folder = get_object_or_404(Folder, pk=folder_id)
             new_file = File.objects.create(
-                user=user, file_name=file_name, data=data, file_size=file_size
+                user=user, file_name=file_name, data=data, file_size=file_size, folder=current_folder, extension=extension
             )
             new_file.save()
     return redirect(renderHome)
@@ -77,17 +82,23 @@ def uploadFile(request):
 
 @login_required
 def renderFolder(request, id):
+    # GET CURRENTLY DISPLAYED FOLDER
     current_folder = get_object_or_404(Folder, pk=id)
-    request.session['current'] = current_folder.id
-    
-    folders = Folder.objects.filter(linked_folder=id)
+   
+    # SHARE CURRENT FOLDER ID WITH THE REST OF THE APPLICATION
+    request.session["current"] = current_folder.id
+    # FILTER FOLDERS INSIDE CURRENTLY DISPLAYED FOLDER - LINKED WITH CURRENT FOLDER
+    folders = Folder.objects.filter(user=request.user, linked_folder=id)
     context = {}
     context["folders"] = folders
+    
+    # DISPLAY FILES INSIDE CURRENT FOLDER
+    files = File.objects.filter(folder=current_folder)
+    context['files'] = files
 
     # DISPLAY FILE UPLOAD FORM
     upload_form = FileUploadForm()
     context["upload_form"] = upload_form
-    
 
     return render(request, "folders.html", context)
 
@@ -100,12 +111,23 @@ def createFolder(request):
         linked_folder_id = request.session.get("current")
         if linked_folder_id:
             linked_folder = Folder.objects.get(pk=linked_folder_id)
-            new_folder = Folder.objects.create(folder_name=folder_name, user=user, linked_folder=linked_folder)
+            new_folder = Folder.objects.create(
+                folder_name=folder_name, user=user, linked_folder=linked_folder
+            )
             new_folder.save()
-            return redirect('renderFolder', linked_folder_id)
+            return redirect("renderFolder", linked_folder_id)
         else:
             new_folder = Folder.objects.create(folder_name=folder_name, user=user)
             new_folder.save()
             return redirect(renderHome)
 
 
+@login_required
+def downloadFile(request, id):
+    file = get_object_or_404(File, pk=id)
+    if request.user.id == file.user.id:
+        file_type = '.' + file.extension.split('/')[1]
+        file_path = 'storage/' + file.file_name + file_type
+        response = FileResponse(open(file_path, 'rb'), content_type=file.extension)  
+        return response
+    return redirect('renderFolder', request.session.get("current"))

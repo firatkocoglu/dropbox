@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class File(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     file_name = models.CharField(verbose_name="file name", max_length=255, unique=True)
+    extension = models.CharField(verbose_name="file extension", max_length=75)
     data = models.FileField(verbose_name="file", upload_to="storage/")
     file_size = models.CharField(max_length=75)
     folder = models.ForeignKey(

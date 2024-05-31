@@ -7,21 +7,20 @@
     </nav>
     <div>
         {% if folders %}
-        <ul class="folders">
+        <ul class="files-folders">
             {% for folder in folders %}
-            <li class="folder">
-                <img src="{{ folder.icon }}" alt="" srcset="" class="folder-img">
+            <li class="file-folder">
+                <img src="{{ folder.icon }}" alt="" srcset="" class="file-folder-img">
                 <a href="{% url 'renderFolder' folder.id %}">
                     <span>{{ folder.folder_name }}</span>
                 </a>
             </li>
             {% endfor %}
         </ul>
-        {% else %}
-        <div>
-            <p>You have no data inside this folder.</p>
-        </div>
         {% endif %}
+    </div>
+    <div>
+        {% include 'partials/files.html' %}
     </div>
 </section>
 <section>

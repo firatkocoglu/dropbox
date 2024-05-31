@@ -1,0 +1,12 @@
+<div>
+    {% if files %}
+    <ul class="files-folders">
+        {% for file in files%}
+        <li class="file-folder">
+            <img src="{{ file.icon }}" alt="" class=" file-folder-img">
+            <a href="{% url 'downloadFile' file.id %}" download>{{ file.file_name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>

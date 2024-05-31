@@ -1,17 +1,17 @@
-.folders {
+.files-folders {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   gap: 20px;
 }
 
-.folder {
+.file-folder {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.folder-img {
+.file-folder-img {
   width: 20px;
   height: 20px;
 }
