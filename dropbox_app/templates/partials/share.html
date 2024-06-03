@@ -1,0 +1,13 @@
+<div>
+    {% if current %}
+    {% if link_form %}
+    <form action="{% url 'generateLink' %}" method="post">
+        {% csrf_token %}
+        {{ link_form }}
+        <input type="submit" value="Generate">
+    </form>
+    {% else %}
+    <a href="{% url 'renderLink' link.link %}" target="_blank">Here is your link</a>
+    {% endif %}
+    {% endif %}
+</div>

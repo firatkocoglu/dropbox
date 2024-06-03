@@ -21,3 +21,8 @@ class LoginForm(forms.Form):
 class FileUploadForm(forms.Form):
     title = forms.CharField(max_length=255, required=True)
     file = forms.FileField(required=True)
+    
+
+class GenerateLinkForm(forms.Form):
+    private = forms.BooleanField(initial=False, required=False)
+    user = forms.CharField(max_length=255, required=False)

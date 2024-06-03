@@ -11,7 +11,6 @@ class File(models.Model):
     folder = models.ForeignKey(
         "Folder", related_name="files", blank=True, null=True, on_delete=models.CASCADE
     )
-    link = models.URLField(verbose_name="file share link", blank=True, null=True)
     icon = models.ImageField(
         verbose_name="file icon", default="/static/icons/document.png"
     )
@@ -32,8 +31,18 @@ class Folder(models.Model):
         null=True,
         on_delete=models.CASCADE,
     )
-    link = models.URLField(verbose_name="file share link", blank=True, null=True)
     icon = models.ImageField(
         verbose_name="folder icon", default="/static/icons/folder.png"
     )
     created_at = models.DateTimeField(auto_now=True)
+
+
+class Link(models.Model):
+    link = models.URLField(verbose_name="folder link")
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name="folder")
+    private = models.BooleanField(
+        verbose_name="is link private or public"
+    )
+    allowed_users = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True
+    )
